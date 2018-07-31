@@ -1,0 +1,80 @@
+* {
+	box-sizing: border-box;
+}
+
+html {
+	height: 100%;
+	font-family: sans-serif;
+	color: #005f87;
+}
+
+body {
+	margin: 0;
+	padding: 1em;
+	min-height: 100%;
+}
+
+svg {
+	width: 40px;
+	height: 40px;
+}
+
+.editor.view {
+	display: flex;
+	
+	canvas {
+		height: 100%;
+		left:0;
+		padding: 0;
+		position: absolute;
+		top:0;
+		width: 100%;
+		/*z-index: -1;*/
+	}
+}
+
+@border: 2px solid grey;
+
+.icon {
+	width: 24px;
+	height: 24px;
+	color: grey;
+}
+
+a {
+	padding: .5em;
+	border: @border;
+	border-radius: .25em;
+	text-decoration: none;
+}
+
+menu {
+	margin: 0;
+	padding: 0;
+
+	&>*:not(:last-child) {
+		margin-bottom: .5em;
+	}
+}
+
+button {
+	cursor: pointer;
+	border: @border;
+	border-radius: .5em;
+	background: white;
+	margin: 0;
+	padding: .5em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	&:focus {
+		outline: none;
+	}
+}
+
+nav {
+	left: 90%;
+	position: absolute;
+	top: 5%;
+}
