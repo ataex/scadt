@@ -4,6 +4,15 @@ export default class Core {
 		this.x;
 		this.y;
 		this.initViewManagment();
+
+		const grid = this.engine.genGrid(10, 0.2);
+		this.gridModel = this.engine.createModel(grid.v, grid.i, 12, 'LINES', 'v');
+		this.launch();
+	}
+
+	launch() {
+		this.engine.draw(this.gridModel);
+		window.requestAnimationFrame(() => this.launch());
 	}
 
 	initViewManagment() {

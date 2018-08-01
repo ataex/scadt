@@ -5,20 +5,12 @@ import ProgramManager from './program-manager.js';
 
 export default class Engine {
 	constructor() {
-		this.init();
+		this.viewport = this.initViewport();
+		this.gl = this.initGl(this.viewport);
 
 		this.viewController = new ViewController(this.gl);
 		this.resourceManager = new ResourceManager();
 		this.programManager = new ProgramManager(this.gl);
-
-		const grid = this.genGrid(10, 0.2);
-		this.gridModel = this.createModel(grid.v, grid.i, 12, 'LINES', 'v');
-		this.launch();
-	}
-
-	launch() {
-		this.draw(this.gridModel);
-		window.requestAnimationFrame(() => this.launch());
 	}
 
 	setSize() {
@@ -32,17 +24,20 @@ export default class Engine {
 		);
 	}
 
-	init() {
-		this.viewport = document.createElement('CANVAS');
-		this.viewport.className = 'viewport';
+	initViewport() {
+		const viewport = document.createElement('CANVAS');
+		viewport.className = 'viewport';
+		return viewport;
+	}
 
-		const gl = this.viewport.getContext('webgl2');
+	initGl(viewport) {
+		const gl = viewport.getContext('webgl2');
 		//gl.clearColor(1.0, 1.0, 1.0, 1.0);
 		gl.enable(gl.DEPTH_TEST);
 		gl.depthFunc(gl.LEQUAL);
 
 		gl.clear(gl.COLOR_BUFFER_BIT);
-		this.gl = gl;
+		return gl;
 	}
 
 	createModel(vertices, indices, stride, mode, program) {
