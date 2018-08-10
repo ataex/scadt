@@ -10,6 +10,6 @@ const engine = new Engine();
 const core = new Core(engine);
 
 m.route(document.body, '/', {
-	'/': new EditorView(engine),
+	'/': { view: () => m(EditorView, { engine: engine }) },
 	'/about': AboutView,
 });
