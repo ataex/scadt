@@ -1,24 +1,26 @@
 import { m4 } from './gmath/gmath.js';
+import GeometryMaker from './geometry-maker.js';
 import ViewController from './view-controller.js';
-import ResourceManager from './resource-manager.js';
 import ProgramManager from './program-manager.js';
+import ResourceManager from './resource-manager.js';
 
 export default class Engine {
 	constructor() {
 		this.viewport = this.initViewport();
 		this.gl = this.initGl(this.viewport);
 
+		this.geometryMaker = new GeometryMaker();
+		this.programManager = new ProgramManager(this.gl);
 		this.viewController = new ViewController(this.gl);
 		this.resourceManager = new ResourceManager();
-		this.programManager = new ProgramManager(this.gl);
 	}
 
-	setSize() {
+	updateViewportSize() {
 		this.viewport.width = this.viewport.clientWidth;
 		this.viewport.height = this.viewport.clientHeight;
-		this.gl.viewport(
-			0,
-			0,
+		// prettier-ignore
+
+		this.gl.viewport(0, 0,
 			this.gl.drawingBufferWidth,
 			this.gl.drawingBufferHeight
 		);
@@ -27,6 +29,7 @@ export default class Engine {
 	initViewport() {
 		const viewport = document.createElement('CANVAS');
 		viewport.className = 'viewport';
+		window.addEventListener('resize', this.updateViewportSize.bind(this));
 		return viewport;
 	}
 
@@ -40,9 +43,8 @@ export default class Engine {
 		return gl;
 	}
 
-	createModel(vertices, indices, stride, mode, program) {
+	createModel({ vertices, indices, pack, mode }) {
 		const gl = this.gl;
-
 		const vertexBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -55,24 +57,31 @@ export default class Engine {
 			gl.STATIC_DRAW
 		);
 
+		const stride = pack.split('').reduce(
+			(r, v) => {
+				if (!r.hasOwnProperty(v)) r[v] = r.s;
+				r.s += 4;
+				return r;
+			},
+			{ s: 0 }
+		);
+
 		return {
 			vertexBuffer: vertexBuffer,
 			indexBuffer: indexBuffer,
 			indexCount: indices.length,
 			stride: stride,
 			mode: mode,
-			program: program,
 		};
 	}
 
 	draw(
-		model,
+		{ vertexBuffer, indexBuffer, indexCount, stride, mode },
+		programName,
 		position = [0, 0, 0],
-		color = [0, 0, 0],
-		programName = model.program
+		color = [200, 200, 200]
 	) {
 		const gl = this.gl;
-
 		// Set shader program
 		const program = this.programManager[programName];
 		gl.useProgram(program);
@@ -108,7 +117,7 @@ export default class Engine {
 		}
 
 		// Set mode buffer
-		gl.bindBuffer(gl.ARRAY_BUFFER, model.vertexBuffer);
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
 		if (program.hasOwnProperty('aVertexPosition')) {
 			gl.enableVertexAttribArray(program.aVertexPosition);
@@ -117,8 +126,20 @@ export default class Engine {
 				3,
 				gl.FLOAT,
 				false,
-				model.stride,
-				0
+				stride.s,
+				stride.p
+			);
+		}
+
+		if (program.hasOwnProperty('aVertexColor')) {
+			gl.enableVertexAttribArray(program.aVertexColor);
+			gl.vertexAttribPointer(
+				program.aVertexColor,
+				3,
+				gl.FLOAT,
+				false,
+				stride.s,
+				stride.c
 			);
 		}
 
@@ -129,14 +150,14 @@ export default class Engine {
 				3,
 				gl.FLOAT,
 				false,
-				model.stride,
-				12
+				stride.s,
+				stride.n
 			);
 		}
-
+		/*
 		if (program.hasOwnProperty('aTextureCoord')) {
 			gl.activeTexture(gl.TEXTURE0);
-			gl.bindTexture(gl.TEXTURE_2D, model.texture);
+			gl.bindTexture(gl.TEXTURE_2D, texture);
 			gl.uniform1i(program.uSampler, 0);
 			gl.enableVertexAttribArray(program.aTextureCoord);
 			gl.vertexAttribPointer(
@@ -144,44 +165,15 @@ export default class Engine {
 				2,
 				gl.FLOAT,
 				false,
-				model.stride,
-				24
+				model.stride.s,
+				model.stride.t
 			);
 		}
-
+		*/
 		// Set index buffer
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBuffer);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
 		// Draw
-		gl.drawElements(gl[model.mode], model.indexCount, gl.UNSIGNED_SHORT, 0);
-	}
-
-	genGrid(size = 10, step = 1) {
-		const grid = { v: [], i: [] };
-
-		for (let i = -size / 2; i < size / 2; i += step) {
-			grid.v.push(-size / 2 - step * 0.5, 0, i, size / 2 + step * 0.5, 0, i);
-			grid.v.push(i, 0, -size / 2 - step * 0.5, i, 0, size / 2 + step * 0.5);
-		}
-		grid.v.push(
-			-size / 2 - step * 0.5,
-			0,
-			size / 2,
-			size / 2 + step * 0.5,
-			0,
-			size / 2
-		);
-		grid.v.push(
-			size / 2,
-			0,
-			-size / 2 - step * 0.5,
-			size / 2,
-			0,
-			size / 2 + step * 0.5
-		);
-
-		for (let j = 0; j < grid.v.length / 3; j++) grid.i.push(j);
-
-		return grid;
+		gl.drawElements(gl[mode], indexCount, gl.UNSIGNED_SHORT, 0);
 	}
 }
