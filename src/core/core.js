@@ -5,13 +5,18 @@ export default class Core {
 		this.y;
 		this.initViewManagment();
 
-		const grid = this.engine.genGrid(10, 0.2);
-		this.gridModel = this.engine.createModel(grid.v, grid.i, 12, 'LINES', 'v');
+		this.grid = this.engine.createModel(
+			this.engine.geometryMaker.genGrid(10, 0.5)
+		);
+
+		this.origin = this.engine.createModel(this.engine.geometryMaker.origin());
+
 		this.launch();
 	}
 
 	launch() {
-		this.engine.draw(this.gridModel);
+		this.engine.draw(this.grid, 'p');
+		this.engine.draw(this.origin, 'pc');
 		window.requestAnimationFrame(() => this.launch());
 	}
 
