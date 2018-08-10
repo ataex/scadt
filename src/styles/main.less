@@ -4,77 +4,76 @@
 
 html {
 	height: 100%;
-	font-family: sans-serif;
-	color: #005f87;
 }
 
 body {
+	height: 100%;
 	margin: 0;
-	padding: 1em;
-	min-height: 100%;
+	padding: 0;
 }
 
-svg {
-	width: 40px;
-	height: 40px;
-}
-
-.editor.view {
+.view {
+	color: #005f87;
 	display: flex;
-	
-	canvas {
-		height: 100%;
-		left:0;
-		padding: 0;
-		position: absolute;
-		top:0;
-		width: 100%;
-		/*z-index: -1;*/
+	font-family: sans-serif;
+	flex-wrap: wrap;
+	height: 100%;
+	width: 100%;
+}
+
+.panel {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+
+	&>*:not(:last-child) {
+		margin-bottom: .5em;
 	}
+
+	&.left {
+		left: 1em;
+		top: 1em;
+	}
+}
+
+.viewport {
+	height: 100%;
+	width: 100%;
 }
 
 @border: 2px solid grey;
 
 .icon {
-	width: 24px;
-	height: 24px;
 	color: grey;
+	height: 24px;
+	width: 24px;
 }
 
 a {
-	padding: .5em;
 	border: @border;
 	border-radius: .25em;
+	padding: .5em;
 	text-decoration: none;
 }
 
-menu {
-	margin: 0;
-	padding: 0;
-
-	&>*:not(:last-child) {
-		margin-bottom: .5em;
-	}
-}
-
 button {
-	cursor: pointer;
+	align-items: center;
+	background: white;
 	border: @border;
 	border-radius: .5em;
-	background: white;
+	cursor: pointer;
+	display: flex;
 	margin: 0;
 	padding: .5em;
-	display: flex;
 	justify-content: center;
-	align-items: center;
 
 	&:focus {
 		outline: none;
 	}
+	&:active {
+		border: 2px solid red;
+	}
 }
 
-nav {
-	left: 90%;
-	position: absolute;
-	top: 5%;
-}
