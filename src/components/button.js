@@ -1,5 +1,5 @@
 import m from 'mithril';
-import SvgIcon from './svgIcon';
+import SvgIcon from './svg-icon';
 
 export default class Button {
 	view(vnode) {

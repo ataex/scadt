@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import NavPanel from '../components/navPanel.js';
+import NavPanel from '../components/nav-panel.js';
 
 export default class IndexView {
 	view() {
