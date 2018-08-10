@@ -1,11 +1,13 @@
-import v from './shaders/v.js';
-import vn from './shaders/vn.js';
+import p from './programs/p.js';
+import pn from './programs/pn.js';
+import pc from './programs/pc.js';
 
 export default class ProgramManager {
 	constructor(gl) {
 		this.gl = gl;
-		this.v = this.initProgram(v);
-		this.vn = this.initProgram(vn);
+		this.p = this.initProgram(p);
+		this.pn = this.initProgram(pn);
+		this.pc = this.initProgram(pc);
 	}
 
 	initProgram(rawProgram) {
