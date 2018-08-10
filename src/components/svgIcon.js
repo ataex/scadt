@@ -3,7 +3,7 @@
 import m from 'mithril';
 
 export default class SvgIcon {
-	constructor(vnode) {
+	constructor() {
 		this.d = {
 			bin:
 				'm 8.5,8.5 v 8 m 6,-8 v 8 m -3,-8 v 8 m -6,-8 v 8 m 0,-14 v -2 h 9 v 2 m -13,3 v -3 h 17 v 3 z m 15,0 v 14 h -13 v -14',
@@ -12,18 +12,13 @@ export default class SvgIcon {
 			home: 'M 10 20 v -6 h 4 v 6 h 5 v -8 h 3 L 12 3 L 2 12 h 3 v 8',
 			folder: 'M 2,20 H 22 V 7 H 11 L 8,4 H 2 Z',
 		};
-
-		this.name = vnode.attrs.name;
 	}
 
-	view() {
+	view(vnode) {
 		return m(
 			'svg.icon',
 			{ viewBox: '0 0 24 24' },
-			m('path', {
-				style: 'fill:currentColor;',
-				d: this.d[this.name],
-			}),
+			m('path', { style: 'fill:currentColor;', d: this.d[vnode.attrs.name] })
 		);
 	}
 }

@@ -1,11 +1,18 @@
 import m from 'mithril';
-import SvgIcon from './svgIcon';
+import Button from './button.js';
 
 export default class LeftPanel {
 	view() {
-		return m('menu.left-panel', [
-			m('button', {}, m(SvgIcon, { name: 'folder' })),
-			m('button', {}, m(SvgIcon, { name: 'home' })),
+		return m('menu.left.panel', [
+			m(Button, {
+				icon: 'folder',
+				onclick: () => {
+					document.querySelector('#file-upload').click();
+				},
+			}),
+			m(Button, { icon: 'home' }),
+
+			m('input', { id: 'file-upload', type: 'file', hidden: true }),
 		]);
 	}
 }
