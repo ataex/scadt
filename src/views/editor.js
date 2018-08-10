@@ -1,21 +1,14 @@
-'use strict';
-
 import m from 'mithril';
 import LeftPanel from '../components/left-panel.js';
 
 export default class Editor {
-	constructor(engine) {
-		this.engine = engine;
-	}
-
 	view() {
-		return m('.editor.view', [m(LeftPanel), m('menu')]);
+		return m('.editor.view', [m(LeftPanel)]);
 	}
 
-	oncreate() {
-		document.querySelector('.editor.view').appendChild(this.engine.viewport);
-		this.engine.setSize();
+	oncreate(vnode) {
+		const engine = vnode.attrs.engine;
+		vnode.dom.appendChild(engine.viewport);
+		engine.updateViewportSize();
 	}
-
-	onremove() {}
 }
