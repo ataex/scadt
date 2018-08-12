@@ -3,7 +3,7 @@ import Button from './button.js';
 
 export default class LeftPanel {
 	view() {
-		return m('menu.left.panel', [
+		return m('.left.panel', [
 			m(Button, {
 				icon: 'folder',
 				onclick: () => {
@@ -11,7 +11,6 @@ export default class LeftPanel {
 				},
 			}),
 			m(Button, { icon: 'home' }),
-
 			m('input', { id: 'file-upload', type: 'file', hidden: true }),
 		]);
 	}
