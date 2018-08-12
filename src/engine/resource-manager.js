@@ -3,68 +3,50 @@ export default class ResourceManager {
 		this.gl = gl;
 	}
 
-	static importOBJ(file) {
-		let name;
-		const data = { f: {}, v: [''], t: [''], n: [''], o: {} };
-		const regexp2 = /(?:[^og]*^(v)\s)?(?:[^og]*^v(t)\s)?(?:[^og]*^v(n)\s)?/m;
-		const regexp = /(?:^[og] +)(\S+)|(?:^f +)(.+)|(v(?=\s)|t|n)\s+(.+)/gm;
+	parseObj(str) {
+		const data = { v: [null], vt: [null], vn: [null] };
+		const objects = {};
+		let object;
+
+		const regexp = /^(?:(v|vt|vn)|(o|g)|(f)) (.*)/gm;
 		let match;
-		while ((match = regexp.exec(file))) {
-			if (match[1]) {
-				name = match[1];
-				data.o[name] = {
-					s: 0,
-					v: [],
-					i: [],
-					m: 'TRIANGLES',
-					a: file
-						.substr(match.index + match[0].length)
-						.match(regexp2)
-						.slice(1, 4)
-						.filter(Boolean),
-				};
-				data.f[name] = [];
-			} else if (match[2]) {
-				data.f[name].push(...match[2].match(/\d+/g));
-			} else if (match[3]) {
-				data[match[3]].push(match[4]);
-			}
+		while ((match = regexp.exec(str))) {
+			if (match[1]) data[match[1]].push(match[4]);
+			else if (match[2]) object = objects[match[4]] = { f: [], v: [], i: [] };
+			else if (match[3]) object.f.push(...match[4].split(' '));
 		}
 
-		for (name in data.f) {
-			var f = data.f[name];
-			var a = data.o[name].a;
-			var v = data.o[name].v;
-			var i = data.o[name].i;
-			var t;
-			for (var fi = 0; fi < f.length; fi += a.length) {
-				t = 'v n t';
-				for (var ai = 0; ai < a.length; ai++) {
-					t = t.replace(a[ai], data[a[ai]][f[fi + ai]]);
-				}
-
-				var ii = 0;
-				for (var vi = -1; vi < v.length; vi++) {
-					if (v[vi] === t) {
-						ii = vi;
-						break;
+		for (const name in objects) {
+			//Convert face information to vertices
+			objects[name].f.forEach((f) => {
+				f = f.split('/');
+				objects[name].v.push(
+					(f[0] ? data.v[f[0]] : '') +
+						(f[2] ? ' ' + data.vn[f[2]] : '') +
+						(f[1] ? ' ' + data.vt[f[1]] : '')
+				);
+			});
+			//Remove duplicate vertices and fill indicec array
+			objects[name] = objects[name].v.reduce(
+				(acc, v, i, arr) => {
+					let di = arr.slice(0, i).indexOf(v);
+					if (di !== -1) acc.indices.push(di);
+					else {
+						acc.indices.push(acc.vertices.length);
+						acc.vertices.push(v);
 					}
-				}
-				if (ii) {
-					i.push(ii);
-				} else {
-					i.push(v.length);
-					v.push(t);
-				}
-			}
-			data.o[name].v = v
+					return acc;
+				},
+				{ vertices: [], indices: [] }
+			);
+			//Convert vertices from string to numbers
+			objects[name].vertices = objects[name].vertices
 				.join()
 				.match(/[\d.-]+/g)
 				.map(Number);
-			data.o[name].a.map(function(k) {
-				data.o[name].s += { v: 12, n: 12, t: 8 }[k];
-			});
+			objects[name].pack = 'pppnnn';
+			objects[name].mode = 'TRIANGLES';
 		}
-		return data.o;
+		return objects;
 	}
 }
