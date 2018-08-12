@@ -15,7 +15,6 @@ export default class ResourceManager {
 			else if (match[2]) object = objects[match[4]] = { f: [], v: [], i: [] };
 			else if (match[3]) object.f.push(...match[4].split(' '));
 		}
-
 		for (const name in objects) {
 			//Convert face information to vertices
 			objects[name].f.forEach((f) => {
@@ -28,8 +27,8 @@ export default class ResourceManager {
 			});
 			//Remove duplicate vertices and fill indicec array
 			objects[name] = objects[name].v.reduce(
-				(acc, v, i, arr) => {
-					let di = arr.slice(0, i).indexOf(v);
+				(acc, v) => {
+					let di = acc.vertices.indexOf(v);
 					if (di !== -1) acc.indices.push(di);
 					else {
 						acc.indices.push(acc.vertices.length);
