@@ -1,45 +1,81 @@
+import m from 'mithril';
+import Stream from 'mithril/stream';
+import Engine from '../engine/engine.js';
+
 export default class Core {
-	constructor(engine) {
-		this.engine = engine;
-		this.x;
-		this.y;
-		this.initViewManagment();
+	constructor() {
+		this.engine = new Engine();
+		this.palette = {};
 
-		this.grid = this.engine.createModel(
-			this.engine.geometryMaker.genGrid(10, 0.5)
-		);
+		this.mode = Stream('select');
+		this.mode.map(m.redraw);
 
-		this.origin = this.engine.createModel(this.engine.geometryMaker.origin());
+		this.initViewManagement();
+		this.prepareScene();
+		this.prepare();
 
 		this.launch();
 	}
 
+	prepareScene() {
+		this.grid = this.engine.createModel(
+			this.engine.geometryMaker.genGrid(10, 0.5)
+		);
+		this.origin = this.engine.createModel(this.engine.geometryMaker.origin());
+	}
+
+	async prepare() {
+		const r = await this.engine.loadStatic('./test.obj');
+		const o = this.engine.objParser.parse(r);
+		for (const name in o) this.palette[name] = this.engine.createModel(o[name]);
+	}
+
 	launch() {
-		this.engine.draw(this.grid, 'p');
-		this.engine.draw(this.origin, 'pc');
+		this.engine.draw(this.grid, { program: 'p' });
+		this.engine.draw(this.origin, { program: 'pc' });
+		if (this.palette.chair) this.engine.draw(this.palette.chair, {});
 		window.requestAnimationFrame(() => this.launch());
 	}
 
-	initViewManagment() {
-		this.engine.viewport.addEventListener('mousewheel', (e) => {
+	initViewManagement() {
+		const mousewheelStream = Stream();
+		this.engine.viewport.addEventListener('mousewheel', mousewheelStream);
+
+		mousewheelStream.map((e) => {
 			this.engine.viewController.zoom(-e.deltaY);
 			e.preventDefault();
 		});
 
-		this.engine.viewport.addEventListener('mousemove', (e) => {
-			const x = this.x;
-			const y = this.y;
+		const mousemoveStream = Stream();
+		this.engine.viewport.addEventListener('mousemove', mousemoveStream);
 
-			if (((e.buttons == 4) & e.shiftKey) | ((e.buttons == 1) & e.shiftKey)) {
-				this.engine.viewController.move([x - e.clientX, y - e.clientY]);
-			} else if (((e.buttons == 1) & e.altKey) | (e.buttons == 4)) {
-				this.engine.viewController.rotate(x - e.clientX, y - e.clientY);
-			} else if ((e.buttons == 1) & e.ctrlKey) {
-				this.engine.viewController.zoom(y - e.clientY);
+		const mousemovePairStream = Stream.scan(
+			(acc, value) => {
+				acc.pe = acc.ce;
+				acc.ce = value;
+				return acc;
+			},
+			{ pe: new Event('mousemove'), ce: new Event('mousemove') },
+			mousemoveStream
+		);
+
+		mousemovePairStream.map(({ pe, ce }) => {
+			if (
+				((ce.buttons == 4) & ce.shiftKey) |
+				((ce.buttons == 1) & ce.shiftKey)
+			) {
+				this.engine.viewController.move([
+					pe.clientX - ce.clientX,
+					pe.clientY - ce.clientY,
+				]);
+			} else if (((ce.buttons == 1) & ce.altKey) | (ce.buttons == 4)) {
+				this.engine.viewController.rotate(
+					pe.clientX - ce.clientX,
+					pe.clientY - ce.clientY
+				);
+			} else if ((ce.buttons == 1) & ce.ctrlKey) {
+				this.engine.viewController.zoom(pe.clientY - ce.clientY);
 			}
-
-			this.x = e.clientX;
-			this.y = e.clientY;
 		});
 	}
 }
