@@ -10,7 +10,7 @@ export default class ViewController {
 		this.projection = 0;
 
 		this.rotateSens = 1;
-		this.moveSens = 0.07;
+		this.moveSens = 0.01;
 		this.zoomSens = 0.75;
 	}
 
