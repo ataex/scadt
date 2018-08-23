@@ -7,9 +7,17 @@ html {
 }
 
 body {
+
 	height: 100%;
 	margin: 0;
 	padding: 0;
+}
+
+a {
+	border: @border;
+	border-radius: .25em;
+	padding: .5em;
+	text-decoration: none;
 }
 
 .view {
@@ -24,8 +32,6 @@ body {
 .panel {
 	display: flex;
 	flex-direction: column;
-	margin: 0;
-	padding: 0;
 	position: absolute;
 
 	&>*:not(:last-child) {
@@ -46,34 +52,40 @@ body {
 @border: 2px solid grey;
 
 .icon {
-	color: grey;
+	color: inherit;
 	height: 24px;
 	width: 24px;
 }
 
-a {
-	border: @border;
-	border-radius: .25em;
-	padding: .5em;
-	text-decoration: none;
-}
 
-button {
+.button {
 	align-items: center;
-	background: white;
-	border: @border;
-	border-radius: .5em;
 	cursor: pointer;
 	display: flex;
 	margin: 0;
-	padding: .5em;
 	justify-content: center;
 
-	&:focus {
-		outline: none;
-	}
 	&:active {
-		border: 2px solid red;
+	}
+	&:hover {
+		color: red;
 	}
 }
 
+.status.bar {
+	position: absolute;
+	bottom: 1em;
+	left: 1em;
+}
+
+.tree {
+	position: absolute;
+	left: 30%;
+	margin-left: 1em;
+	
+	.content {
+		margin-left: 1em;
+	}
+	& input ~ ul { display: none; }
+	& input:checked ~ ul { display: block; }
+}
