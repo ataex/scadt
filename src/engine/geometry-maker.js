@@ -2,7 +2,7 @@ export default class GeometryMaker {
 	origin() {
 		return {
 			mode: 'LINES',
-			pack: 'pppccc',
+			layout: 'pppccc',
 			// prettier-ignore
 			vertices: [
 				0, 0, 0, 255, 0, 0,
@@ -40,7 +40,7 @@ export default class GeometryMaker {
 			vertices: v,
 			indices: i,
 			mode: 'LINES',
-			pack: 'ppp',
+			layout: 'ppp',
 		};
 	}
 }
