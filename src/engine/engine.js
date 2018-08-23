@@ -1,8 +1,8 @@
 import { m4 } from './gmath/gmath.js';
 import GeometryMaker from './geometry-maker.js';
-import ViewController from './view-controller.js';
+import ObjParser from './obj-parser.js';
 import ProgramManager from './program-manager.js';
-import ResourceManager from './resource-manager.js';
+import ViewController from './view-controller.js';
 
 export default class Engine {
 	constructor() {
@@ -12,14 +12,13 @@ export default class Engine {
 		this.geometryMaker = new GeometryMaker();
 		this.programManager = new ProgramManager(this.gl);
 		this.viewController = new ViewController(this.gl);
-		this.resourceManager = new ResourceManager();
+		this.objParser = new ObjParser();
 	}
 
 	updateViewportSize() {
 		this.viewport.width = this.viewport.clientWidth;
 		this.viewport.height = this.viewport.clientHeight;
 		// prettier-ignore
-
 		this.gl.viewport(0, 0,
 			this.gl.drawingBufferWidth,
 			this.gl.drawingBufferHeight
@@ -43,7 +42,31 @@ export default class Engine {
 		return gl;
 	}
 
-	createModel({ vertices, indices, pack, mode }) {
+	loadStatic(url) {
+		return new Promise((resolve, reject) => {
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', url);
+			xhr.addEventListener('load', function() {
+				if (this.status >= 200 && this.status < 300) {
+					resolve(this.response);
+				} else {
+					reject({
+						status: this.status,
+						statusText: this.statusText,
+					});
+				}
+			});
+			xhr.addEventListener('error', function() {
+				reject({
+					status: this.status,
+					statusText: this.statusText,
+				});
+			});
+			xhr.send();
+		});
+	}
+
+	createModel({ vertices, indices, layout, mode }) {
 		const gl = this.gl;
 		const vertexBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -57,33 +80,31 @@ export default class Engine {
 			gl.STATIC_DRAW
 		);
 
-		const stride = pack.split('').reduce(
-			(r, v) => {
-				if (!r.hasOwnProperty(v)) r[v] = r.s;
-				r.s += 4;
-				return r;
+		layout = layout.split('').reduce(
+			(result, attr) => {
+				if (!result.hasOwnProperty(attr)) result[attr] = result.stride;
+				result.stride += 4;
+				return result;
 			},
-			{ s: 0 }
+			{ stride: 0 }
 		);
 
 		return {
-			vertexBuffer: vertexBuffer,
-			indexBuffer: indexBuffer,
+			vertexBuffer,
+			indexBuffer,
 			indexCount: indices.length,
-			stride: stride,
-			mode: mode,
+			layout,
+			mode,
 		};
 	}
 
 	draw(
-		{ vertexBuffer, indexBuffer, indexCount, stride, mode },
-		programName,
-		position = [0, 0, 0],
-		color = [200, 200, 200]
+		{ vertexBuffer, indexBuffer, indexCount, layout, mode },
+		{ program = 'pn', position = [0, 0, 0], color = [200, 200, 200] }
 	) {
 		const gl = this.gl;
 		// Set shader program
-		const program = this.programManager[programName];
+		program = this.programManager[program];
 		gl.useProgram(program);
 
 		// Set projection-view matrix
@@ -126,8 +147,8 @@ export default class Engine {
 				3,
 				gl.FLOAT,
 				false,
-				stride.s,
-				stride.p
+				layout.stride,
+				layout.p
 			);
 		}
 
@@ -138,8 +159,8 @@ export default class Engine {
 				3,
 				gl.FLOAT,
 				false,
-				stride.s,
-				stride.c
+				layout.stride,
+				layout.c
 			);
 		}
 
@@ -150,8 +171,8 @@ export default class Engine {
 				3,
 				gl.FLOAT,
 				false,
-				stride.s,
-				stride.n
+				layout.stride,
+				layout.n
 			);
 		}
 		/*
@@ -165,8 +186,8 @@ export default class Engine {
 				2,
 				gl.FLOAT,
 				false,
-				model.stride.s,
-				model.stride.t
+				layout.stride,
+				layout.t
 			);
 		}
 		*/
