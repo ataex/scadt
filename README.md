@@ -4,21 +4,31 @@
 
 ### Main
 ```
-Views   Components     Engine             Core
-  |         |            |                 |
-  +->About  +->LeftPanel +->ViewController +->Entity
-  |         |            |                 |
-  +->Editor +->Button    +->ProgramManager +->Palette
-            |            |
-            +->SvgIcon   +->GeometryMaker
-                         |
-                         +->ObjParser
+Gui         Core      Engine
+ |           |          |
+ +-+Views    +->Entity  +->Model
+ | |         |          |
+ | +->Editor +->Palette +->ProgramManager
+ | |                    |
+ | +->About             +->ViewController
+ |                      |
+ +-+Components          +->GeometryMaker
+   |                    |
+   +->LeftPanel         +->ObjParser
+   |
+   +->StatusBar
+   |
+   +->FpsMeter
+   |
+   +->Button
+   |
+   +->SvgIcon
 ```
 ### Objects
 ```
-Geometry +-> Model +--------+   Palette   Entity
-                            |
-vertices     verticesBuffer +-> Model <-@ Model
+Geometry     Model              Palette   Entity
+
+vertices     verticesBuffer     Model     Model
 indices      indicesBuffer                position
 layout       indicesCount                 color
 mode         layout

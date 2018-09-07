@@ -1,13 +1,9 @@
-import './styles/main.less';
-import m from 'mithril';
+import Engine from './engine/engine.js';
+import Core from './core/core.js';
+import Gui from './gui/gui.js';
 
-import Core from './core/core';
-import EditorView from './views/editor.js';
-import AboutView from './views/about.js';
-
-const core = new Core();
-
-m.route(document.body, '/', {
-	'/': { view: () => m(EditorView, { core }) },
-	'/about': AboutView,
-});
+(async () => {
+	const engine = Engine();
+	const core = await Core(engine);
+	Gui(engine, core);
+})();

@@ -10,7 +10,12 @@ export default class LeftPanel {
 					document.querySelector('#file-upload').click();
 				},
 			}),
-			m(Button, { icon: 'fullscreen' }),
+			m(Button, {
+				icon: 'fullscreen',
+				onclick() {
+					vnode.attrs.core.mode('select');
+				},
+			}),
 			m(Button, {
 				icon: 'move',
 				onclick() {
