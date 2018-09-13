@@ -1,4 +1,6 @@
-import { m4 } from './gmath/gmath.js';
+'use strict';
+
+import gm from './graphics-math.js';
 import initGeometryMaker from './geometry-maker.js';
 import initProgramManager from './program-manager.js';
 import initViewController from './view-controller.js';
@@ -6,37 +8,41 @@ import initViewController from './view-controller.js';
 import parseObj from './obj-parser.js';
 
 export default function Engine() {
-	const viewport = initViewport();
+	const self = {};
+	const viewport = initViewport(self);
 	const gl = initGl(viewport);
 
 	const geometryMaker = initGeometryMaker();
 	const programManager = initProgramManager(gl);
 	const viewController = initViewController(gl);
 
-	return Object.freeze({
-		viewport,
-		gl,
-		geometryMaker,
-		programManager,
-		viewController,
-		select,
-		draw,
-		loadStatic,
-		createModel,
-		updateViewportSize,
-		parseObj,
-	});
+	return Object.freeze(
+		Object.assign(self, {
+			viewport,
+			gl,
+			geometryMaker,
+			programManager,
+			viewController,
+			pick,
+			draw,
+			loadStatic,
+			createModel,
+			updateViewportSize,
+			parseObj,
+		})
+	);
 }
 
-function initViewport() {
+function initViewport(self) {
 	const viewport = document.createElement('CANVAS');
 	viewport.className = 'viewport';
-	window.addEventListener('resize', updateViewportSize.bind(this));
+
+	window.addEventListener('resize', updateViewportSize.bind(self));
 	return viewport;
 }
 
 function initGl(viewport) {
-	const gl = viewport.getContext('webgl');
+	const gl = viewport.getContext('webgl2');
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	gl.enable(gl.DEPTH_TEST);
 	gl.depthFunc(gl.LEQUAL);
@@ -111,10 +117,12 @@ function createModel({ vertices, indices, layout, mode }) {
 	};
 }
 
-function draw(
-	{ vertexBuffer, indexBuffer, indexCount, layout, mode },
-	{ program = 'pn', position = [0, 0, 0], color = [200, 200, 200] }
-) {
+function draw({
+	model: { vertexBuffer, indexBuffer, indexCount, layout, mode },
+	program = 'pn',
+	position = [0, 0, 0],
+	color = [200, 200, 200],
+}) {
 	const gl = this.gl;
 	// Set shader program
 	program = this.programManager[program];
@@ -130,8 +138,9 @@ function draw(
 	}
 
 	// Set model matrix
-	const modelMatrix = m4.init();
-	m4.translate(modelMatrix, modelMatrix, position);
+	//const modelMatrix = gm.m4.init();
+	//gm.m4.multiply(modelMatrix, modelMatrix, position);
+	const modelMatrix = position;
 
 	if (program.hasOwnProperty('uMMatrix')) {
 		gl.uniformMatrix4fv(program.uMMatrix, false, modelMatrix);
@@ -143,9 +152,9 @@ function draw(
 	}
 
 	// Set normal matrix
-	const normalMatrix = m4.init();
-	m4.invert(normalMatrix, modelMatrix);
-	m4.transpose(normalMatrix, normalMatrix);
+	const normalMatrix = gm.m4.init();
+	gm.m4.invert(normalMatrix, modelMatrix);
+	gm.m4.transpose(normalMatrix, normalMatrix);
 	if (program.hasOwnProperty('uNMatrix')) {
 		gl.uniformMatrix4fv(program.uNMatrix, false, normalMatrix);
 	}
@@ -211,7 +220,7 @@ function draw(
 	gl.drawElements(gl[mode], indexCount, gl.UNSIGNED_SHORT, 0);
 }
 
-function select(list, e) {
+function pick(list, e) {
 	let x = e.pageX - this.viewport.offsetLeft;
 	let y = this.viewport.height - e.pageY - this.viewport.offsetTop;
 
@@ -223,19 +232,14 @@ function select(list, e) {
 	gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
 	gl.viewport(0, 0, width, height);
 
-	const colorBuffer = gl.createTexture();
-	gl.bindTexture(gl.TEXTURE_2D, colorBuffer);
-	// prettier-ignore
-	gl.texImage2D(
-		gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0,
-		gl.RGBA, gl.UNSIGNED_BYTE, null
-	);
-	gl.framebufferTexture2D(
+	var colorBuffer = gl.createRenderbuffer();
+	gl.bindRenderbuffer(gl.RENDERBUFFER, colorBuffer);
+	gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA8, width, height);
+	gl.framebufferRenderbuffer(
 		gl.FRAMEBUFFER,
 		gl.COLOR_ATTACHMENT0,
-		gl.TEXTURE_2D,
-		colorBuffer,
-		0
+		gl.RENDERBUFFER,
+		colorBuffer
 	);
 
 	const depthBuffer = gl.createRenderbuffer();
@@ -249,7 +253,8 @@ function select(list, e) {
 	);
 
 	list.forEach((v, i) => {
-		this.draw(v.model, {
+		this.draw({
+			model: v.model,
 			position: v.position,
 			color: [i + 1, 0, 0],
 			program: 'p',
@@ -258,9 +263,9 @@ function select(list, e) {
 
 	let color = new Uint8Array(1 * 1 * 4);
 	gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, color);
-	list.forEach((v) => (v.selected = false));
-	list[color[0] - 1].selected = true;
 
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	gl.viewport(0, 0, width, height);
+
+	return list[color[0] - 1];
 }
