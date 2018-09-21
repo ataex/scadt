@@ -1,7 +1,12 @@
-import gm from '../engine/graphics-math.js';
+import gm from '../engine/utility/graphics-math.js';
 
-export default function Entity(model, position = [0, 0, 0], color = [0, 0, 0]) {
+export default function Entity(
+	model,
+	position = [0, 0, 0],
+	color = [0, 95, 135]
+) {
 	const p = gm.m4.init();
+
 	p[12] = position[0];
 	p[13] = position[1];
 	p[14] = position[2];
@@ -41,6 +46,9 @@ export default function Entity(model, position = [0, 0, 0], color = [0, 0, 0]) {
 			gm.m4.multiply(this.position, this.position, rot);
 
 			//gm.m4.rotate(this.position, this.position, angle, axis);
+		},
+		scale(vector) {
+			gm.m4.scale(this.position, this.position, vector);
 		},
 	};
 }

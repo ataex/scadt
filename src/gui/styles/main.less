@@ -35,18 +35,37 @@ a {
 	width: 100%;
 }
 
+.editor.view {
+	.menu {
+			left: 1em;
+		top: 1em;
+
+	}
+}
 .panel {
 	display: flex;
 	flex-direction: column;
 	position: absolute;
-
-	&>*:not(:last-child) {
-		margin-bottom: .5em;
-	}
+	
+	align-items: start;
 
 	&.left {
 		left: 1em;
 		top: 1em;
+		&>*:not(:last-child) {
+			margin-bottom: .5em;
+		}
+
+	}
+
+	&.top {
+		left: 3em;
+		top: 1em;
+		flex-direction: row;
+		&>*:not(:last-child) {
+			margin-right: .5em;
+		}
+
 	}
 }
 
@@ -72,9 +91,31 @@ a {
 	justify-content: center;
 
 	&:active {
+		color: red;
 	}
 	&:hover {
 		color: red;
+	}
+}
+
+.menu {
+	display: flex;
+
+	> .button {
+		color: #870000;
+	}
+
+	> .content {
+		display: flex;
+		> * {
+			margin-left: .5em;
+		}
+	}
+
+	&.collapsed {
+		> .content {
+			display: none;
+		}
 	}
 }
 
@@ -90,14 +131,57 @@ a {
 	right: 1em;
 }
 
-.tree {
-	position: absolute;
-	left: 30%;
-	margin-left: 1em;
+
+
+.branch {
+	position: relative;
+
+	.label {
+		display: flex;
+		align-items: center;
+		:first-child {
+			margin-right: 0.5em;
+		}
+	}
 	
+	&.collapsed > .content {
+		display: none;
+	}
+
 	.content {
 		margin-left: 1em;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		> * {
+			::before {
+				position: absolute;
+				content: '';
+				top: -12px;
+				height: 100%;
+				width: 2px;
+				background: #005f87;
+			}
+		}
+		> *:last-child {
+			::before {
+				height: 24px;
+			}
+		}
 	}
-	& input ~ ul { display: none; }
-	& input:checked ~ ul { display: block; }
 }
+
+.dialog {
+	position: absolute;
+	width: 50%;
+	height: 50%;
+	left: 0;
+	right: 0;
+	margin-left: auto;
+	margin-right: auto;
+	background: red;
+	&:focus {
+		outline: none;
+	}
+}
+

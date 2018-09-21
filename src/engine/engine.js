@@ -1,7 +1,6 @@
 'use strict';
 
-import gm from './graphics-math.js';
-import initGeometryMaker from './geometry-maker.js';
+import gm from './utility/graphics-math.js';
 import initProgramManager from './program-manager.js';
 import initViewController from './view-controller.js';
 
@@ -12,7 +11,6 @@ export default function Engine() {
 	const viewport = initViewport(self);
 	const gl = initGl(viewport);
 
-	const geometryMaker = initGeometryMaker();
 	const programManager = initProgramManager(gl);
 	const viewController = initViewController(gl);
 
@@ -20,7 +18,6 @@ export default function Engine() {
 		Object.assign(self, {
 			viewport,
 			gl,
-			geometryMaker,
 			programManager,
 			viewController,
 			pick,
@@ -121,7 +118,7 @@ function draw({
 	model: { vertexBuffer, indexBuffer, indexCount, layout, mode },
 	program = 'pn',
 	position = [0, 0, 0],
-	color = [200, 200, 200],
+	color = [0, 95, 135],
 }) {
 	const gl = this.gl;
 	// Set shader program
@@ -137,9 +134,6 @@ function draw({
 		);
 	}
 
-	// Set model matrix
-	//const modelMatrix = gm.m4.init();
-	//gm.m4.multiply(modelMatrix, modelMatrix, position);
 	const modelMatrix = position;
 
 	if (program.hasOwnProperty('uMMatrix')) {

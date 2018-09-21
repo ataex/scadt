@@ -1,6 +1,10 @@
-export default function initGeometryMaker() {
-	return Object.freeze({ origin, genGrid });
-}
+/*
+circle
+x = r*cos(fi)
+y = r*sin(fi)
+*/
+
+export default Object.freeze({ origin, genGrid });
 
 function origin() {
 	return {

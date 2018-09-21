@@ -1,5 +1,5 @@
 'use strict';
-import gm from './graphics-math.js';
+import gm from './utility/graphics-math.js';
 
 export default function initViewController(gl) {
 	const target = gm.v3.init(0, 0, 0);

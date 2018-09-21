@@ -1,14 +1,18 @@
 'use strict';
+
 import Stream from 'mithril/stream';
-import Behavior from './behavior.js';
+
 import Entity from '../engine/entity.js';
-import gm from '../engine/graphics-math.js';
+import gm from '../engine/utility/graphics-math.js';
+
 import Palette from './palette.js';
 import Scaffold from './scaffold.js';
 
+import Behavior from './modes/behavior.js';
+
 export default async function Core(engine) {
 	const self = {};
-	const mode = Stream('rotate');
+	const mode = Stream('move');
 	const behavior = Behavior(mode);
 
 	initEventsStreams(engine.viewport, self, behavior);
@@ -47,7 +51,7 @@ function loop({ engine, scaffold, scene, frames }) {
 		engine.draw({
 			model: entity.model,
 			position: entity.position,
-			color: entity.selected ? [255, 0, 0] : [200, 200, 200],
+			color: entity.selected ? [255, 0, 0] : entity.color,
 			program: 'pn',
 		});
 	});
