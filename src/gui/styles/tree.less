@@ -1,0 +1,49 @@
+.branch, .leaf {
+	position: relative;
+
+	> .title {
+		display: flex;
+		align-items: center;
+
+		> .icon {
+			margin-right: .5em;
+		}
+	}
+}
+
+.branch {
+
+	&.collapsed > .content {
+		display: none;
+	}
+
+	> .content {
+		margin-left: 1em;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+
+		>*::before {
+			position: absolute;
+			content: '';
+			top: -12px;
+			height: 100%;
+			width: 2px;
+			background: #005f87;
+		}
+
+		>*:last-child::before {
+			height: 24px;
+		}
+	}
+}
+
+.leaf {
+	> .content {
+		margin-left: 1em;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+	
+	}
+}

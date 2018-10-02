@@ -14,30 +14,21 @@ export default function Scale() {
 				if (picked) {
 					origin = this.engine.viewController.project(picked.orient());
 					const dir = [e.clientX - origin[0], e.clientY - origin[1]];
-
 					len = Math.sqrt(dir[0] * dir[0] + dir[1] * dir[1]);
-
-					picked.select();
+					picked.toggleSelect();
 					this.temp(picked);
-
-					const r = this.mousePlaneProjection(
-						e,
-						this.engine.viewController.getOppositeBasePlane(),
-						picked.position
-					);
 				}
 			}
 		},
 		mouseUp() {
 			const picked = this.temp();
 			if (picked) {
-				this.temp().selected = false;
+				this.temp().toggleSelect();
 				this.temp(undefined);
 			}
 		},
 
 		mouseMove(e) {
-			console.log('Scale');
 			const picked = this.temp();
 			if (picked) {
 				const nir = [e.clientX - origin[0], e.clientY - origin[1]];

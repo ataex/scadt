@@ -7,10 +7,13 @@ export default function SvgIcon() {
 	return Object.freeze({ view });
 }
 
-function view(vnode) {
+function view({ attrs: { glyph, onclick } }) {
 	return m(
 		'svg.icon',
-		{ viewBox: '0 0 24 24' },
-		m('path', { style: 'fill:currentColor', d: glyphs[vnode.attrs.name] })
+		{ viewBox: '0 0 24 24', onclick },
+		m('path', {
+			style: 'fill:currentColor',
+			d: glyphs[glyph],
+		})
 	);
 }

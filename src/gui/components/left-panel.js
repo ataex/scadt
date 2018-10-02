@@ -1,20 +1,16 @@
 import m from 'mithril';
 import Button from './button.js';
-import FileMenu from './file-menu.js';
-import PaletteMenu from './palette-menu.js';
-import SettingsMenu from './settings-menu.js';
+import Palette from './palette-menu.js';
 
 export default function LeftPanel() {
 	return Object.freeze({ view });
 }
 
-function view(vnode) {
+function view({ attrs: { core } }) {
 	return m('.left.panel', [
-		m(SettingsMenu),
-		m(FileMenu),
-		m(PaletteMenu),
+		m('.controls', [
+			/*
 
-		/*
 		m(Button, {
 			icon: 'folder',
 			onclick() {
@@ -27,27 +23,41 @@ function view(vnode) {
 			},
 		}),
 		*/
+			m(Button, {
+				title: 'Palette',
+				icon: 'add',
+				onclick() {
+					m.mount(document.querySelector('.left.panel .view'), {
+						view() {
+							return m(Palette, { core });
+						},
+					});
+				},
+			}),
 
-		m(Button, {
-			title: 'Move object',
-			icon: 'move',
-			onclick() {
-				vnode.attrs.core.mode('move');
-			},
-		}),
-		m(Button, {
-			title: 'Rotate object',
-			icon: 'rotate',
-			onclick() {
-				vnode.attrs.core.mode('rotate');
-			},
-		}),
-		m(Button, {
-			title: 'Scale object',
-			icon: 'scale',
-			onclick() {
-				vnode.attrs.core.mode('scale');
-			},
-		}),
+			m(Button, {
+				title: 'Move object',
+				icon: 'move',
+				onclick() {
+					core.mode('move');
+				},
+			}),
+
+			m(Button, {
+				title: 'Rotate object',
+				icon: 'rotate',
+				onclick() {
+					core.mode('rotate');
+				},
+			}),
+			m(Button, {
+				title: 'Scale object',
+				icon: 'scale',
+				onclick() {
+					core.mode('scale');
+				},
+			}),
+		]),
+		m('.view'),
 	]);
 }

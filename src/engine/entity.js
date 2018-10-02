@@ -11,14 +11,24 @@ export default function Entity(
 	p[13] = position[1];
 	p[14] = position[2];
 
-	return {
+	let selected = false;
+
+	function isSelected() {
+		return selected;
+	}
+
+	function toggleSelect() {
+		selected = !selected;
+	}
+
+	return Object.freeze({
 		model,
 		color,
 		position: p,
-		selected: false,
-		select() {
-			this.selected = true;
-		},
+
+		isSelected,
+		toggleSelect,
+
 		move(position) {
 			this.position[12] = position[0];
 			this.position[13] = position[1];
@@ -50,5 +60,5 @@ export default function Entity(
 		scale(vector) {
 			gm.m4.scale(this.position, this.position, vector);
 		},
-	};
+	});
 }

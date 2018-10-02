@@ -11,7 +11,10 @@ import Scaffold from './scaffold.js';
 import Behavior from './modes/behavior.js';
 
 export default async function Core(engine) {
-	const self = {};
+	const self = {
+		scene: [],
+		engine,
+	};
 	const mode = Stream('move');
 	const behavior = Behavior(mode);
 
@@ -24,11 +27,11 @@ export default async function Core(engine) {
 
 	const palette = await Palette(engine);
 	const scaffold = Scaffold(engine);
-	const scene = initScene(palette);
+	//const scene = initScene(palette);
 
 	const temp = Stream();
 
-	loop({ engine, scaffold, scene, frames });
+	loop({ engine, scaffold, frames });
 	return Object.freeze(
 		Object.assign(self, {
 			behavior,
@@ -38,33 +41,45 @@ export default async function Core(engine) {
 			palette,
 			scaffold,
 			temp,
-			scene,
 			mousePlaneProjection,
+			addSceneObject,
 		})
 	);
-}
 
-function loop({ engine, scaffold, scene, frames }) {
-	engine.draw({ ...scaffold.grid, program: 'p' });
-	engine.draw({ ...scaffold.origin, program: 'pc' });
-	scene.forEach((entity) => {
-		engine.draw({
-			model: entity.model,
-			position: entity.position,
-			color: entity.selected ? [255, 0, 0] : entity.color,
-			program: 'pn',
+	function addSceneObject(model) {
+		self.scene.push(Entity(model, self.engine.viewController.target));
+	}
+
+	function loop({ engine, scaffold, scene, frames }) {
+		engine.draw({ ...scaffold.grid, program: 'p' });
+		engine.draw({ ...scaffold.origin, program: 'pc' });
+		self.scene.forEach((entity) => {
+			engine.draw({
+				...scaffold.origin,
+				position: entity.position,
+				program: 'pc',
+			});
+
+			engine.draw({
+				model: entity.model,
+				position: entity.position,
+				color: entity.isSelected() ? [255, 0, 0] : entity.color,
+				program: 'pn',
+			});
 		});
-	});
-	frames(performance.now());
-	window.requestAnimationFrame(() => loop({ engine, scaffold, scene, frames }));
+		frames(performance.now());
+		window.requestAnimationFrame(() =>
+			loop({ engine, scaffold, scene, frames })
+		);
+	}
 }
 
 function initScene(palette) {
 	return [
-		new Entity(palette.chair, [1, 0, -1]),
-		new Entity(palette.chair, [-2, 0, -1]),
-		new Entity(palette.chair, [-2, 0, 2]),
-		new Entity(palette.chair, [1, 0, 2]),
+		Entity(palette.chair, [1, 0, -1]),
+		Entity(palette.chair, [-2, 0, -1]),
+		Entity(palette.chair, [-2, 0, 2]),
+		Entity(palette.chair, [1, 0, 2]),
 	];
 }
 

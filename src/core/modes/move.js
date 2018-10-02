@@ -11,7 +11,7 @@ export default function Move() {
 			if (e.buttons === 1) {
 				const picked = this.engine.pick(this.scene, e);
 				if (picked) {
-					picked.select();
+					picked.toggleSelect();
 					this.temp(picked);
 
 					const r = this.mousePlaneProjection(
@@ -27,7 +27,7 @@ export default function Move() {
 		mouseUp() {
 			const picked = this.temp();
 			if (picked) {
-				this.temp().selected = false;
+				this.temp().toggleSelect();
 				this.temp(undefined);
 			}
 		},

@@ -18,7 +18,7 @@ export default function Rotate() {
 						Math.atan(dir[1] / dir[0]) +
 						(dir[0] < 0 ? 3.14159 : dir[1] < 0 ? 6.28318 : 0);
 
-					picked.select();
+					picked.toggleSelect();
 					this.temp(picked);
 
 					const r = this.mousePlaneProjection(
@@ -32,7 +32,7 @@ export default function Rotate() {
 		mouseUp() {
 			const picked = this.temp();
 			if (picked) {
-				this.temp().selected = false;
+				this.temp().toggleSelect();
 				this.temp(undefined);
 			}
 		},
