@@ -1,7 +1,7 @@
 export default async function Palette() {
 	const palette = {
 		furniture: {
-			'good chairs': './test.obj',
+			chairs: './chairs.obj',
 		},
 	};
 	/*
