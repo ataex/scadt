@@ -21,8 +21,7 @@
 	},
 	"homepage": "https://github.com/omudrejshij/scadt#readme",
 	"dependencies": {
-		"mithril": "^1.1.6",
-		"rxjs": "^6.2.2"
+		"mithril": "^1.1.6"
 	},
 	"devDependencies": {
 		"clean-webpack-plugin": "^0.1.19",
