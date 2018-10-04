@@ -44,33 +44,24 @@ a {
 
 	}
 }
+
 .panel {
 	display: flex;
 	flex-direction: column;
 	position: absolute;
 	
 	align-items: start;
-
+	> .controls {
+		> *:not(:last-child) {
+			margin-bottom: .5em;
+		}
+	}
+	
 	&.left {
 		display: flex;
 		flex-direction: row;
-		border: 1px solid #870000;
 		left: 1em;
 		top: 1em;
-		&>*:not(:last-child) {
-			margin-bottom: .5em;
-		}
-
-	}
-
-	&.top {
-		left: 3em;
-		top: 1em;
-		flex-direction: row;
-		&>*:not(:last-child) {
-			margin-right: .5em;
-		}
-
 	}
 }
 
@@ -95,7 +86,7 @@ a {
 	margin: 0;
 	justify-content: center;
 
-	&:active {
+	&.active {
 		color: red;
 	}
 	&:hover {
@@ -104,23 +95,8 @@ a {
 }
 
 .menu {
-	display: flex;
-
-	> .button {
-		color: #870000;
-	}
-
-	> .content {
-		display: flex;
-		> * {
-			margin-left: .5em;
-		}
-	}
-
-	&.collapsed {
-		> .content {
-			display: none;
-		}
+	> *:not(:last-child) {
+		margin-bottom: .5em;
 	}
 }
 

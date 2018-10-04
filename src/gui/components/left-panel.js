@@ -1,5 +1,6 @@
 import m from 'mithril';
 import Button from './button.js';
+import Menu from './menu.js';
 import Palette from './palette-menu.js';
 
 export default function LeftPanel() {
@@ -9,8 +10,14 @@ export default function LeftPanel() {
 function view({ attrs: { core } }) {
 	return m('.left.panel', [
 		m('.controls', [
-			/*
+			m(Button, {
+				title: 'Settings',
+				icon: 'settings',
+				group: 'mode',
+				onclick() {},
+			}),
 
+			/*
 		m(Button, {
 			icon: 'folder',
 			onclick() {
@@ -27,36 +34,44 @@ function view({ attrs: { core } }) {
 				title: 'Palette',
 				icon: 'add',
 				onclick() {
-					m.mount(document.querySelector('.left.panel .view'), {
-						view() {
-							return m(Palette, { core });
-						},
-					});
+					const container = document.querySelector('.left.panel .view');
+					this.classList.contains('active')
+						? m.mount(container, null)
+						: m.mount(container, {
+							view() {
+								return m(Palette, { core });
+							},
+						  });
 				},
 			}),
 
-			m(Button, {
-				title: 'Move object',
-				icon: 'move',
-				onclick() {
-					core.mode('move');
-				},
-			}),
+			m(Menu, [
+				m(Button, {
+					title: 'Move object',
+					icon: 'move',
+					group: 'mode',
+					onclick() {
+						core.mode('move');
+					},
+				}),
 
-			m(Button, {
-				title: 'Rotate object',
-				icon: 'rotate',
-				onclick() {
-					core.mode('rotate');
-				},
-			}),
-			m(Button, {
-				title: 'Scale object',
-				icon: 'scale',
-				onclick() {
-					core.mode('scale');
-				},
-			}),
+				m(Button, {
+					title: 'Rotate object',
+					icon: 'rotate',
+					group: 'mode',
+					onclick() {
+						core.mode('rotate');
+					},
+				}),
+				m(Button, {
+					title: 'Scale object',
+					icon: 'scale',
+					group: 'mode',
+					onclick() {
+						core.mode('scale');
+					},
+				}),
+			]),
 		]),
 		m('.view'),
 	]);

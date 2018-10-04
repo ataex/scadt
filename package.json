@@ -4,7 +4,8 @@
 	"description": "Simple computer aided design tool",
 	"main": "index.js",
 	"scripts": {
-		"dev": "webpack-dev-server --config webpack.dev.js"
+		"dev": "webpack-dev-server --config webpack.dev.js",
+		"build": "webpack --config webpack.prod.js"
 	},
 	"repository": {
 		"type": "git",
@@ -25,6 +26,7 @@
 	},
 	"devDependencies": {
 		"clean-webpack-plugin": "^0.1.19",
+		"copy-webpack-plugin": "^4.5.2",
 		"css-loader": "^1.0.0",
 		"eslint": "^5.1.0",
 		"html-webpack-plugin": "^3.2.0",
