@@ -8,7 +8,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = merge(common, {
 	mode: 'production',
 	plugins: [
-		new CleanWebpackPlugin(['./build']),
+		new CleanWebpackPlugin(['./docs']),
 		new CopyWebpackPlugin([
 			{
 				from: './static/',
