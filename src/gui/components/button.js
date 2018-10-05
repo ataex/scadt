@@ -13,8 +13,6 @@ export default function Button() {
 					group,
 					onclick() {
 						onclick.bind(this)();
-
-						const isActive = this.classList.contains('active');
 						document
 							.querySelectorAll(`.button[group=${group}]`)
 							.forEach((el) => {

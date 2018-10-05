@@ -5,9 +5,7 @@ module.exports = {
 		app: './src/main.js',
 	},
 	output: {
-		filename: '[name].bundle.js',
-		path: path.resolve(__dirname, './docs'),
-		publicPath: '/',
+		filename: '[name].[hash].bundle.js',
 	},
 	module: {
 		rules: [
